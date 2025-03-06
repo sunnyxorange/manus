@@ -32,6 +32,10 @@ export async function generateMetadata({
   };
 }
 
+export function generateStaticParams() {
+  return [{ locale: 'en' }, { locale: 'zh' }]
+}
+
 export default async function RootLayout({
   children,
   params: { locale },

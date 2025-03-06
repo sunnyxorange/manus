@@ -18,8 +18,6 @@ const withMDX = mdx({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
-  reactStrictMode: false,
-  pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
   images: {
     remotePatterns: [
       {
@@ -31,14 +29,46 @@ const nextConfig = {
   async redirects() {
     return [];
   },
+  experimental: {
+    optimizePackageImports: ['@radix-ui/react-icons'],
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        minSize: 20000,
+        maxSize: 20000000,
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          commons: {
+            name: 'commons',
+            chunks: 'all',
+            minChunks: 2,
+            maxSize: 20000000
+          },
+          shared: {
+            name: (module, chunks, cacheGroupKey) => {
+              const moduleFileName = module
+                .identifier()
+                .split('/')
+                .reduceRight((item) => item)
+              return `shared-${moduleFileName}`
+            },
+            chunks: 'all',
+            minChunks: 2,
+            maxSize: 20000000
+          },
+        },
+      }
+    }
+    return config
+  }
 };
 
-// Make sure experimental mdx flag is enabled
-const configWithMDX = {
+export default withBundleAnalyzer(withNextIntl(withMDX({
   ...nextConfig,
   experimental: {
     mdxRs: true,
   },
-};
-
-export default withBundleAnalyzer(withNextIntl(withMDX(configWithMDX)));
+})));
