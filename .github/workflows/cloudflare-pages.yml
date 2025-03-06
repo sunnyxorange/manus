@@ -2,9 +2,9 @@ name: Deploy to Cloudflare Pages
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
 
 jobs:
   deploy:
@@ -34,4 +34,4 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           pnpm cf:build
-          npx wrangler pages deploy .vercel/output/static --project-name=shipany-template-one 
+          npx wrangler pages deploy .vercel/output/static --project-name=manus 
